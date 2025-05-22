@@ -15,9 +15,9 @@ class PizzaApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         useMaterial3: true,
-        primarySwatch: Colors.orange,
+        primarySwatch: Colors.blue, // Mudança de cor
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.orange,
+          seedColor: Colors.blue, // Mudança de cor
         ),
       ),
       home: const TelaPizzas(),
@@ -34,34 +34,84 @@ class TelaPizzas extends StatefulWidget {
 
 class _TelaPizzasState extends State<TelaPizzas> {
   String selectedCategory = 'Todas';
+  String searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
-    // Filtrando os produtos com base na categoria selecionada
     final filteredPizzas = pizzas
-        .where((pizza) => selectedCategory == 'Todas' || pizza.categoria == selectedCategory)
+        .where((pizza) =>
+            (selectedCategory == 'Todas' || pizza.categoria == selectedCategory) &&
+            (pizza.nome.toLowerCase().contains(searchQuery.toLowerCase())))
         .toList();
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white, // Removendo o fundo laranja
+        elevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Row(
+              children: [
+                // Ícone da conta
+                IconButton(
+                  icon: const Icon(Icons.account_circle, size: 30),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Abrindo sua conta!')),
+                    );
+                  },
+                ),
+                // Ícone do carrinho
+                IconButton(
+                  icon: const Icon(Icons.shopping_cart, size: 30, color: Colors.black),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Carrinho de compras!')),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+        title: Padding(
+          padding: const EdgeInsets.only(left: 16.0),
+          child: Focus(
+            onFocusChange: (hasFocus) {
+              setState(() {});
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: searchQuery.isNotEmpty ? Colors.blue : Colors.grey,
+                  width: 2.0,
+                ),
+              ),
+              child: TextField(
+                onChanged: (query) {
+                  setState(() {
+                    searchQuery = query;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'Pesquisar Produto...',
+                  prefixIcon: const Icon(Icons.search),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
       body: Container(
         color: Colors.white,
         child: SafeArea(
           child: Column(
             children: [
-              const SizedBox(height: 24),
-              const Text(
-                '🍕 Pizzaria Moderna',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Escolha sua pizza favorita!',
-                style: TextStyle(fontSize: 16, color: Colors.black54),
-              ),
               const SizedBox(height: 24),
               // Filtro de categorias
               Padding(
@@ -124,7 +174,6 @@ class Pizza {
   });
 }
 
-// Lista de produtos simulada, com categorias
 final List<Pizza> pizzas = [
   Pizza(
     nome: "Margherita",
@@ -165,9 +214,11 @@ class FilterButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        primary: Colors.orange,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(Colors.blue),
+        shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
       ),
       onPressed: onTap,
       child: Text(
@@ -268,7 +319,7 @@ class PizzaDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(pizza.nome),
-        backgroundColor: Colors.orangeAccent,
+        backgroundColor: Colors.blue,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -289,7 +340,7 @@ class PizzaDetailScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               "R\$ ${pizza.preco.toStringAsFixed(2)}",
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.orangeAccent),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue),
             ),
             const SizedBox(height: 32),
             ElevatedButton(
@@ -322,7 +373,7 @@ class MeiaLuaCarrinho extends StatelessWidget {
           icon: const Icon(
             Icons.shopping_cart,
             size: 40,
-            color: Colors.white,
+            color: Colors.black,
           ),
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
